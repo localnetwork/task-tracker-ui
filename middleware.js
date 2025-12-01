@@ -30,13 +30,15 @@ const isLoggedInBlock = async (req) => {
 const redirectIfNotLoggedIn = async (req) => {
   const token = req.cookies.get(process.env.NEXT_PUBLIC_TOKEN)?.value;
 
-  // If no token and trying to access a protected route
-  const protectedPaths = ["/"]; // add other protected routes here
+  // Define protected routes (exclude /login and /register)
+  const protectedPaths = ["/"]; // add other truly protected routes here
+
   if (!token && protectedPaths.includes(req.nextUrl.pathname)) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
+
   return null;
 };
 
@@ -51,5 +53,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/register"],
+  matcher: ["/", "/login", "/register"], // same as before
 };
