@@ -41,6 +41,12 @@ export default function Login() {
       const response = await AUTHAPI.login(payload);
       persistentStore.setState({ profile: response?.data?.user });
       router.push("/");
+      validationState.setState({
+        validationInfo: {
+          isOpen: true,
+          message: "Login successful!",
+        },
+      });
     } catch (error) {
       console.log("Error", error.status);
 

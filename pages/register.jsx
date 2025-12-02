@@ -54,6 +54,13 @@ export default function Register() {
       const response = await AUTHAPI.register(payload);
       persistentStore.setState({ profile: response?.data?.user });
       router.push("/");
+
+      validationState.setState({
+        validationInfo: {
+          isOpen: true,
+          message: "Registration successful! Logged in.",
+        },
+      });
     } catch (error) {
       console.log("Error", error);
       setErrors(error?.data?.error);
