@@ -48,15 +48,12 @@ export default function Login() {
         },
       });
     } catch (error) {
-      console.log("Error", error.status);
-
       setErrors(error?.data?.error);
 
       switch (error?.status) {
         case 400:
           validationState.setState({
             validationInfo: {
-              type: "login",
               isOpen: true,
               message: "Please check validated fields.",
             },
@@ -65,7 +62,6 @@ export default function Login() {
         case 401:
           validationState.setState({
             validationInfo: {
-              type: "login",
               isOpen: true,
               message:
                 "We couldn't log you in. Please check your credentials and try again.",
@@ -73,7 +69,12 @@ export default function Login() {
           });
           break;
         default:
-          toast.error("An unexpected error occurred. Please try again later.");
+          validationState.setState({
+            validationInfo: {
+              isOpen: true,
+              message: "An unexpected error occurred. Please try again later.",
+            },
+          });
           break;
       }
     } finally {
@@ -122,9 +123,6 @@ export default function Login() {
                   }`}
                   disabled={isLoading}
                 >
-                  {isLoading && (
-                    <Spinner className="w-5 h-5 text-white animate-spin opacity-30" />
-                  )}
                   Login
                 </button>
               </div>
