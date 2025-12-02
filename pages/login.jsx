@@ -11,7 +11,7 @@ import { EyeIcon, EyeOffIcon } from "lucide-react"; // 👁️ Eye icons
 import Link from "next/link";
 import Input from "@/components/forms/Input";
 import Password from "@/components/forms/Password";
-
+import validationState from "@/lib/store/validationState";
 export default function Login() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +20,7 @@ export default function Login() {
   const [payload, setPayload] = useState({});
 
   const [isFocused, setIsFocused] = useState(false);
+  const validationInfo = validationState((state) => state.validationInfo);
 
   const onChange = (e) => {
     setPayload({ ...payload, [e.target.name]: e.target.value });
@@ -36,19 +37,39 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
 
-    // const payload = {
-    //   username: e.target.username.value,
-    //   password: e.target.password.value,
-    // };
-
     try {
       const response = await AUTHAPI.login(payload);
       persistentStore.setState({ profile: response?.data?.user });
       router.push("/");
     } catch (error) {
-      console.log("Error", error);
+      console.log("Error", error.status);
+
       setErrors(error?.data?.error);
-      //   if (error?.data?.message) toast.error(error.data.message);
+
+      switch (error?.status) {
+        case 400:
+          validationState.setState({
+            validationInfo: {
+              type: "login",
+              isOpen: true,
+              message: "Please check validated fields.",
+            },
+          });
+          break;
+        case 401:
+          validationState.setState({
+            validationInfo: {
+              type: "login",
+              isOpen: true,
+              message:
+                "We couldn't log you in. Please check your credentials and try again.",
+            },
+          });
+          break;
+        default:
+          toast.error("An unexpected error occurred. Please try again later.");
+          break;
+      }
     } finally {
       setIsLoading(false);
     }
@@ -57,21 +78,11 @@ export default function Login() {
   return (
     <div className="min-h-[calc(100vh-92px)]">
       <div className="container py-[50px]">
-        <div className="grid grid-cols-2 max-w-[1140px] mx-auto">
-          {/* LEFT IMAGE */}
-          <div className="pr-[50px] flex flex-col pt-[100px]">
-            <Image
-              src="/desktop-illustration.webp"
-              alt="Login"
-              width={1200}
-              height={800}
-            />
-          </div>
-
+        <div className="grid max-w-[540px] mx-auto">
           {/* RIGHT FORM */}
           <div className="py-[50px]">
-            <h2 className="text-3xl font-bold mb-6">
-              Log in to continue your learning journey
+            <h2 className="text-3xl text-white text-center font-bold mb-6">
+              Sign In to Task Tracker
             </h2>
 
             <form className="flex flex-col gap-y-[20px]" onSubmit={onLogin}>
@@ -86,7 +97,6 @@ export default function Login() {
               />
 
               {/* PASSWORD with Eye Icon */}
-
               <Password
                 id="password"
                 name="password"
@@ -101,7 +111,7 @@ export default function Login() {
               <div>
                 <button
                   type="submit"
-                  className={`shadow-md bg-[#0056D2] w-full text-white font-semibold px-[30px] py-[10px] rounded-[8px] inline-flex justify-center items-center gap-[10px] text-[18px] text-center min-w-[150px] hover:opacity-90 cursor-pointer ${
+                  className={`shadow-md font-bold bg-[#EFF3F4] w-full text-[#333] px-[30px] py-[20px] rounded-[50px] inline-flex justify-center items-center gap-[10px] text-[22px] text-center min-w-[150px] hover:opacity-90 cursor-pointer ${
                     isLoading ? "opacity-70" : "hover:opacity-90 cursor-pointer"
                   }`}
                   disabled={isLoading}
@@ -116,20 +126,14 @@ export default function Login() {
 
             <div className="divider border-b border-[2px] border-[#f5f5f5] my-[40px]" />
 
-            <div className="bg-[#F6F7F9] font-light text-[18px] px-[30px] py-[20px] mt-[20px] text-center border-b border-[#ddd]">
+            <div className="bg-[#e2e2e2] font-light text-[18px] px-[30px] py-[20px] mt-[20px] text-center border-b border-[#333]">
               Don't have an account?{" "}
-              <Link
-                href="/register"
-                className="text-[#0056D2] underline font-bold"
-              >
+              <Link href="/register" className="underline font-bold">
                 Sign up
               </Link>
             </div>
-            <div className="bg-[#F6F7F9] px-[30px] py-[20px] text-center">
-              <Link
-                href="/forgot-password"
-                className="text-[#0056D2] underline font-bold"
-              >
+            <div className="bg-[#e2e2e2] px-[30px] py-[20px] text-center">
+              <Link href="/forgot-password" className="underline font-bold">
                 Forgot your password?
               </Link>
             </div>

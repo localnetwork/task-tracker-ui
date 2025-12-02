@@ -12,6 +12,7 @@ import Check from "@/components/icons/Check";
 import Input from "@/components/forms/Input";
 import Password from "@/components/forms/Password";
 import Link from "next/link";
+import validationState from "@/lib/store/validationState";
 
 export default function Register() {
   const router = useRouter();
@@ -47,7 +48,6 @@ export default function Register() {
       confirmpassword: e.target.confirmpassword.value,
       firstname: e.target.firstname.value,
       lastname: e.target.lastname.value,
-      role: router?.query?.mode === "instructor" ? "2" : "3",
     };
 
     try {
@@ -57,7 +57,19 @@ export default function Register() {
     } catch (error) {
       console.log("Error", error);
       setErrors(error?.data?.error);
-      if (error?.data?.message) toast.error(error.data.message);
+
+      switch (error?.status) {
+        case 400:
+          validationState.setState({
+            validationInfo: {
+              isOpen: true,
+              message: "Please check validated fields.",
+            },
+          });
+          break;
+        default:
+          break;
+      }
     } finally {
       setIsLoading(false);
     }
@@ -65,54 +77,17 @@ export default function Register() {
 
   useEffect(() => {
     if (!router.isReady) return;
-
-    if (
-      !router.query.mode ||
-      (router.query.mode !== "instructor" && router.query.mode !== "student")
-    ) {
-      router.replace("/register?mode=student");
-    }
   }, [router.isReady, router.query.mode]);
 
   return (
     <div className="min-h-[calc(100vh-92px)] py-[30px]">
       <div className="container py-[50px]">
-        <div className="grid grid-cols-2 min-h-[500px] rounded-lg max-w-[1140px] mx-auto">
-          {/* LEFT IMAGE */}
-          <div className="pr-[50px] flex flex-col pt-[100px]">
-            <Image
-              src="/desktop-illustration.webp"
-              alt="Login"
-              width={1200}
-              height={800}
-            />
-          </div>
-
+        <div className="grid max-w-[540px] mx-auto">
           {/* RIGHT FORM */}
           <div className="">
-            {router.query.mode == "student" && (
-              <div className="pb-[50px]">
-                <h1 className="pb-[10px] font-medium text-[40px] text-[#2a2b3f]">
-                  Create an account
-                </h1>
-                <p className="text-[16px] font-light text-gray-600">
-                  Start your learning journey today and unlock your potential
-                  with expert-led courses.
-                </p>
-              </div>
-            )}
-
-            {router.query.mode == "instructor" && (
-              <div className="pb-[50px]">
-                <h1 className="pb-[10px] font-medium text-[40px] text-[#2a2b3f] ">
-                  Become a Upskill Instructor
-                </h1>
-                <p className="text-[16px] font-light text-gray-600">
-                  Discover a supportive community of online instructors. Get
-                  instant access to all course creation resources.
-                </p>
-              </div>
-            )}
+            <h2 className="text-3xl text-white text-center font-bold mb-6">
+              Sign Up to Task Tracker
+            </h2>
 
             <form className="flex flex-col gap-y-[20px]" onSubmit={onRegister}>
               <div className="grid gap-[15px]">
@@ -170,7 +145,7 @@ export default function Register() {
               <div>
                 <button
                   type="submit"
-                  className={`shadow-md bg-[#0056D2] w-full text-white font-semibold px-[30px] py-[10px] rounded-[8px] inline-flex justify-center items-center gap-[10px] text-[18px] text-center min-w-[150px] ${
+                  className={`shadow-md  bg-[#EFF3F4] w-full text-[#333] font-semibold px-[30px] py-[20px] rounded-[50px] inline-flex justify-center items-center gap-[10px] text-[18px] text-center min-w-[150px] hover:opacity-90 cursor-pointer ${
                     isLoading ? "opacity-70" : "hover:opacity-90 cursor-pointer"
                   }`}
                   disabled={isLoading}
@@ -185,25 +160,15 @@ export default function Register() {
 
             <div className="divider border-b border-[2px] border-[#f5f5f5] my-[40px]" />
 
-            <p className="text-[14px] text-center">
-              By signing up, you agree to our{" "}
-              <Link href="/terms" className="text-[#0056D2] underline">
-                Terms of Use
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="text-[#0056D2] underline">
-                Privacy Policy
-              </Link>
-              .
-            </p>
-
-            <div className="bg-[#F6F7F9] font-light text-[18px] px-[30px] py-[20px] rounded-[10px] mt-[50px] text-center">
+            <div className="bg-[#e2e2e2] font-light text-[18px] px-[30px] py-[20px] mt-[20px] text-center border-b border-[#333]">
               Already have an account?{" "}
-              <Link
-                href="/login"
-                className="text-[#0056D2] underline font-bold"
-              >
+              <Link href="/login" className="underline font-bold">
                 Log in
+              </Link>
+            </div>
+            <div className="bg-[#e2e2e2] px-[30px] py-[20px] text-center">
+              <Link href="/forgot-password" className="underline font-bold">
+                Forgot your password?
               </Link>
             </div>
           </div>

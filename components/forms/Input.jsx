@@ -29,22 +29,23 @@ export default function Input({
         placeholder={placeholder}
         value={value || ""}
         onFocus={onFocus}
-        onBlur={onBlur} // ✅ reset focus when clicking outside
-        className={`border-[#4b4c54] border-[1px] rounded-lg min-h-[60px] py-3 px-[20px] w-full focus:outline-[#3588FC] ${
-          error ? "border-red-500 shadow-md shadow-red-200" : ""
-        }`}
+        onBlur={onBlur}
+        autoComplete="on"
+        className={`border-[#515151] !bg-black text-white border-[2px] min-h-[65px] rounded-[50px] py-6 px-[25px] w-full focus:outline-[#1D9BF0]
+          ${error ? "!border-[#1D9BF0] shadow-md shadow-white-200" : ""}
+           
+        `}
       />
       <label
-        htmlFor={name} // ✅ match the input id dynamically
-        className={`absolute left-[20px] font-medium transition-all text-[#2a2b3f] ${
+        htmlFor={name}
+        className={`absolute left-[25px] font-medium transition-all text-[#fff] ${
           isFocused?.[name] || value || error
-            ? "top-[5px] text-[8px]"
-            : "top-[18px] cursor-pointer text-[16px]"
+            ? "top-[10px] text-[8px]"
+            : "top-[20px] cursor-pointer text-[16px]"
         }`}
       >
         {label}
       </label>
-      {error && <p className="text-red-500 text-[12px] mt-1">{error}</p>}
     </div>
   );
 }

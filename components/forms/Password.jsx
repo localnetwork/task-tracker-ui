@@ -33,28 +33,28 @@ export default function Password({
         value={value || ""}
         onFocus={onFocus}
         onBlur={onBlur} // ✅ reset focus when clicking outside
-        className={`border-[#4b4c54] border-[1px] rounded-lg min-h-[60px] py-3 px-[20px] w-full focus:outline-[#3588FC] ${
-          error ? "border-red-500 shadow-md shadow-red-200" : ""
-        }`}
+        className={`border-[#515151] !bg-black text-white border-[2px] min-h-[65px] rounded-[50px] py-6 px-[25px] w-full focus:outline-[#1D9BF0]
+          ${error ? "!border-[#1D9BF0] shadow-md shadow-white-200" : ""}
+          
+        `}
       />
       <button
         type="button"
         onClick={() => setShowPassword((prev) => !prev)}
-        className="absolute top-[18px] right-3 text-gray-500 hover:text-gray-700"
+        className="absolute top-[25px] right-5 text-gray-500 hover:text-gray-700"
       >
         {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
       </button>
       <label
         htmlFor={name} // ✅ match the input id dynamically
-        className={`absolute left-[20px] font-medium transition-all text-[#2a2b3f] ${
+        className={`absolute left-[25px] font-medium transition-all text-[#fff] ${
           isFocused?.[name] || value || error
-            ? "top-[5px] text-[8px]"
-            : "top-[18px] cursor-pointer text-[16px]"
+            ? "top-[10px] text-[8px]"
+            : "top-[20px] cursor-pointer text-[16px]"
         }`}
       >
         {label}
       </label>
-      {error && <p className="text-red-500 text-[12px] mt-1">{error}</p>}
     </div>
   );
 }
