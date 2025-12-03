@@ -43,7 +43,7 @@ export default function Input({
         className={`absolute left-[25px] font-medium transition-all text-[#fff] ${
           isFocused?.[name] || value || error
             ? "top-[10px] text-[8px]"
-            : "top-[20px] cursor-pointer text-[16px]"
+            : "top-[25px] cursor-pointer text-[16px]"
         }`}
       >
         {label}

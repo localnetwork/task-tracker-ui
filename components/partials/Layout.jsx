@@ -3,6 +3,8 @@ import toast, { Toaster } from "react-hot-toast";
 import SidebarNav from "./SidebarNav";
 import persistentStore from "@/lib/store/persistentStore";
 import ValidationBar from "../notifications/validations/ValidationBar";
+import modalState from "@/lib/store/modalState";
+import Modal from "../modals/Modal";
 export default function Layout({ children }) {
   const profile = persistentStore((state) => state.profile);
   return (
@@ -14,6 +16,7 @@ export default function Layout({ children }) {
       </div>
 
       <ValidationBar />
+      <Modal />
     </div>
   );
 }

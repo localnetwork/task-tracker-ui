@@ -19,7 +19,7 @@ export default function ValidationBar() {
     <div
       className={`${
         isOpen ? "translate-y-0" : "translate-y-[100%]"
-      } fixed bottom-0 w-full left-0 transition-transform duration-300 py-[20px] font-bold px-[50px] bg-[#1D9BF0] text-white`}
+      } fixed z-[2000] bottom-0 w-full left-0 transition-transform duration-300 py-[20px] font-bold px-[50px] bg-[#1D9BF0] text-white`}
     >
       {validationInfo?.message}
       <span

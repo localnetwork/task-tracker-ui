@@ -14,6 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import UserCard from "../cards/UserCard";
+import modalState from "@/lib/store/modalState";
 export default function SidebarNav() {
   const router = useRouter();
   const menuLinks = [
@@ -56,8 +57,8 @@ export default function SidebarNav() {
   return (
     <div className="sidebar border-r border-[#303030] pr-[70px]">
       <header className="text-white pl-[130px] max-w-[350px] w-full py-5 ">
-        <div className="mt-2">
-          <Link href="/">
+        <div className="mt-2 px-[20px]">
+          <Link href="/" className="inline-block">
             <Image
               src="/logo.webp"
               className="brightness-100"
@@ -83,7 +84,18 @@ export default function SidebarNav() {
               </li>
             ))}
             <li className="pl-[20px]">
-              <button className="bg-[#eff3f4] cursor-pointer w-full text-black font-bold px-[30px] py-[15px] rounded-[50px] mt-[20px] hover:opacity-90">
+              <button
+                onClick={() => {
+                  modalState.setState({
+                    modalInfo: {
+                      type: "TASK_CREATE",
+                      isOpen: true,
+                      title: "Add Task",
+                    },
+                  });
+                }}
+                className="bg-[#eff3f4] cursor-pointer w-full text-black font-bold px-[30px] py-[15px] rounded-[50px] mt-[20px] hover:opacity-90"
+              >
                 Add Task
               </button>
             </li>
