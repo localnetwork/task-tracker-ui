@@ -88,6 +88,13 @@ export default function Login() {
         <div className="grid max-w-[540px] mx-auto">
           {/* RIGHT FORM */}
           <div className="py-[50px]">
+            <Image
+              src="/logo.webp"
+              alt="Logo"
+              width={60}
+              height={60}
+              className="mx-auto mb-[20px]"
+            />
             <h2 className="text-3xl text-white text-center font-bold mb-6">
               Sign In to Task Tracker
             </h2>

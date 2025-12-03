@@ -7,7 +7,7 @@ export default function Layout({ children }) {
   const profile = persistentStore((state) => state.profile);
   return (
     <div className="flex flex-col min-h-screen">
-      <div>
+      <div className="flex h-full grow">
         {profile && <SidebarNav />}
 
         <main className="grow">{children}</main>

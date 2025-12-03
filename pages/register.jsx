@@ -45,7 +45,7 @@ export default function Register() {
     const payload = {
       email: e.target.email.value,
       password: e.target.password.value,
-      confirmpassword: e.target.confirmpassword.value,
+      confirmPassword: e.target.confirmPassword.value,
       firstname: e.target.firstname.value,
       lastname: e.target.lastname.value,
     };
@@ -82,6 +82,7 @@ export default function Register() {
     }
   };
 
+  console.log("errors", errors);
   useEffect(() => {
     if (!router.isReady) return;
   }, [router.isReady, router.query.mode]);
@@ -92,6 +93,13 @@ export default function Register() {
         <div className="grid max-w-[540px] mx-auto">
           {/* RIGHT FORM */}
           <div className="">
+            <Image
+              src="/logo.webp"
+              alt="Logo"
+              width={60}
+              height={60}
+              className="mx-auto mb-[20px]"
+            />
             <h2 className="text-3xl text-white text-center font-bold mb-6">
               Sign Up to Task Tracker
             </h2>
@@ -138,13 +146,13 @@ export default function Register() {
                   error={extractErrors(errors, "password")}
                 />
                 <Password
-                  id="confirmpassword"
-                  name="confirmpassword"
+                  id="confirmPassword"
+                  name="confirmPassword"
                   label="Confirm Password"
-                  value={payload.confirmpassword || ""}
+                  value={payload.confirmPassword || ""}
                   onChange={onChange}
                   onFocus={onFocus}
-                  error={extractErrors(errors, "confirmpassword")}
+                  error={extractErrors(errors, "confirmPassword")}
                 />
               </div>
 
@@ -153,13 +161,12 @@ export default function Register() {
                 <button
                   type="submit"
                   className={`shadow-md  bg-[#EFF3F4] w-full text-[#333] font-semibold px-[30px] py-[20px] rounded-[50px] inline-flex justify-center items-center gap-[10px] text-[18px] text-center min-w-[150px] hover:opacity-90 cursor-pointer ${
-                    isLoading ? "opacity-70" : "hover:opacity-90 cursor-pointer"
+                    isLoading
+                      ? "!opacity-70"
+                      : "hover:opacity-90 cursor-pointer"
                   }`}
                   disabled={isLoading}
                 >
-                  {isLoading && (
-                    <Spinner className="w-5 h-5 text-white animate-spin opacity-30" />
-                  )}
                   Continue
                 </button>
               </div>

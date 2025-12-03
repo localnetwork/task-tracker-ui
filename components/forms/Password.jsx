@@ -1,4 +1,4 @@
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { AlertCircle, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function Password({
@@ -38,13 +38,17 @@ export default function Password({
           
         `}
       />
-      <button
-        type="button"
-        onClick={() => setShowPassword((prev) => !prev)}
-        className="absolute top-[25px] right-5 text-gray-500 hover:text-gray-700"
-      >
-        {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
-      </button>
+
+      {!error && (
+        <button
+          type="button"
+          onClick={() => setShowPassword((prev) => !prev)}
+          className="absolute top-[25px] right-[25px] text-gray-500 hover:text-gray-700"
+        >
+          {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
+        </button>
+      )}
+
       <label
         htmlFor={name} // ✅ match the input id dynamically
         className={`absolute left-[25px] font-medium transition-all text-[#fff] ${
@@ -55,6 +59,16 @@ export default function Password({
       >
         {label}
       </label>
+
+      {error && (
+        <div className="absolute group top-[25px] right-[25px] h-[30px] min-w-[30px] ">
+          <AlertCircle className="text-[#1D9BF0] group-hover:hidden" />
+
+          <span className="hidden group-hover:block error-message py-[10px] bg-[#1D9BF0] text-white text-[12px] rounded-[8px] px-[10px] mt-[-5px] right-[25px] whitespace-nowrap">
+            {error}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
