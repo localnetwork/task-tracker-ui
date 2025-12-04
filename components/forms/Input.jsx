@@ -20,7 +20,6 @@ export default function Input({
     setIsFocused((prev) => ({ ...prev, [e.target.name]: false }));
   };
 
-  console.log("error", error);
   return (
     <div className="relative">
       <input

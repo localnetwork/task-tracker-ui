@@ -1,5 +1,5 @@
 import { AlertCircle } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
@@ -19,21 +19,56 @@ export default function CalendarField({ label, name, value, onChange, error }) {
     value ? (new Date(value).getHours() >= 12 ? "PM" : "AM") : "AM"
   );
 
-  // Update parent payload whenever date or time changes
-  useEffect(() => {
-    if (selectedDate) {
-      let h = hours % 12;
-      if (ampm === "PM") h += 12;
-      const combined = new Date(selectedDate);
-      combined.setHours(h);
-      combined.setMinutes(minutes);
-      combined.setSeconds(0);
-      const phDate = new Date(combined.getTime() + 8 * 60 * 60 * 1000);
-      onChange({
-        target: { name, value: phDate.toISOString() },
-      });
+  // Helper function to build ISO string
+  const buildISOString = (date, hrs, mins, period) => {
+    let h = hrs % 12;
+    if (period === "PM") h += 12;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hourStr = String(h).padStart(2, "0");
+    const minuteStr = String(mins).padStart(2, "0");
+
+    return `${year}-${month}-${day}T${hourStr}:${minuteStr}:00.000Z`;
+  };
+
+  // Handle date change
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    if (date) {
+      const isoString = buildISOString(date, hours, minutes, ampm);
+      onChange({ target: { name, value: isoString } });
     }
-  }, [selectedDate, hours, minutes, ampm]);
+  };
+
+  // Handle time changes
+  const handleHoursChange = (e) => {
+    const newHours = Number(e.target.value);
+    setHours(newHours);
+    if (selectedDate) {
+      const isoString = buildISOString(selectedDate, newHours, minutes, ampm);
+      onChange({ target: { name, value: isoString } });
+    }
+  };
+
+  const handleMinutesChange = (e) => {
+    const newMinutes = Number(e.target.value);
+    setMinutes(newMinutes);
+    if (selectedDate) {
+      const isoString = buildISOString(selectedDate, hours, newMinutes, ampm);
+      onChange({ target: { name, value: isoString } });
+    }
+  };
+
+  const handleAmPmChange = (e) => {
+    const newAmPm = e.target.value;
+    setAmpm(newAmPm);
+    if (selectedDate) {
+      const isoString = buildISOString(selectedDate, hours, minutes, newAmPm);
+      onChange({ target: { name, value: isoString } });
+    }
+  };
 
   // Generate dropdown options
   const hourOptions = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -41,6 +76,7 @@ export default function CalendarField({ label, name, value, onChange, error }) {
 
   return (
     <div className="grid grid-cols-2 gap-2 w-full">
+      {/* Time selector */}
       <div>
         <label
           htmlFor={name}
@@ -48,12 +84,11 @@ export default function CalendarField({ label, name, value, onChange, error }) {
         >
           Select a time
         </label>
-        {/* Time dropdowns */}
         <div className="flex gap-2 mt-2 text-[14px]">
           {/* Hours */}
           <select
             value={hours}
-            onChange={(e) => setHours(Number(e.target.value))}
+            onChange={handleHoursChange}
             className="px-3 py-2 rounded-lg bg-[#000] border-[#515151] border text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {hourOptions.map((h) => (
@@ -66,7 +101,7 @@ export default function CalendarField({ label, name, value, onChange, error }) {
           {/* Minutes */}
           <select
             value={minutes}
-            onChange={(e) => setMinutes(Number(e.target.value))}
+            onChange={handleMinutesChange}
             className="px-3 py-2 rounded-lg bg-[#000] border-[#515151] border text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {minuteOptions.map((m) => (
@@ -79,7 +114,7 @@ export default function CalendarField({ label, name, value, onChange, error }) {
           {/* AM/PM */}
           <select
             value={ampm}
-            onChange={(e) => setAmpm(e.target.value)}
+            onChange={handleAmPmChange}
             className="px-3 py-2 rounded-lg bg-[#000] border-[#515151] border text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="AM">AM</option>
@@ -87,6 +122,8 @@ export default function CalendarField({ label, name, value, onChange, error }) {
           </select>
         </div>
       </div>
+
+      {/* Calendar selector */}
       <div>
         {label && (
           <label
@@ -97,16 +134,15 @@ export default function CalendarField({ label, name, value, onChange, error }) {
           </label>
         )}
         <div
-          className={`${
+          className={`relative ${
             error
               ? "border-[#1D9BF0] border p-[15px] rounded-[20px] shadow-md shadow-white-200"
               : ""
-          } relative`}
+          }`}
         >
           {error && (
-            <div className="absolute z-[100] group top-[25px] right-[15px] h-[30px] min-w-[30px] ">
+            <div className="absolute z-[100] group top-[25px] right-[15px] h-[30px] min-w-[30px]">
               <AlertCircle className="text-[#1D9BF0] group-hover:hidden" />
-
               <span className="hidden group-hover:block error-message py-[10px] bg-[#1D9BF0] text-white text-[12px] rounded-[8px] px-[10px] mt-[-5px] right-[25px] whitespace-nowrap">
                 {error}
               </span>
@@ -114,12 +150,20 @@ export default function CalendarField({ label, name, value, onChange, error }) {
           )}
           <Calendar
             value={selectedDate}
-            onChange={setSelectedDate}
+            onChange={handleDateChange}
             calendarType="gregory"
             className={`rounded-lg text-[14px] border w-full p-2 bg-[#151515] text-white ${
               error ? "border-red-500" : "border-neutral-700"
             }`}
-            tileClassName="text-white hover:bg-neutral-800 rounded-md"
+            tileClassName={({ date }) => {
+              const today = new Date();
+              if (selectedDate) return "";
+              const isToday =
+                date.getFullYear() === today.getFullYear() &&
+                date.getMonth() === today.getMonth() &&
+                date.getDate() === today.getDate();
+              return isToday ? "calendar-today" : "";
+            }}
             prevLabel="<"
             nextLabel=">"
             formatShortWeekday={(locale, date) =>
@@ -128,6 +172,7 @@ export default function CalendarField({ label, name, value, onChange, error }) {
           />
         </div>
       </div>
+
       <style jsx global>{`
         .react-calendar {
           background-color: #151515 !important;
@@ -148,6 +193,10 @@ export default function CalendarField({ label, name, value, onChange, error }) {
         }
         .react-calendar__tile--hover {
           background: #151515 !important;
+        }
+        .calendar-today {
+          background: #000 !important;
+          color: #fff !important;
         }
       `}</style>
     </div>

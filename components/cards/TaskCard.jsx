@@ -2,7 +2,6 @@ import { CheckCircle } from "lucide-react";
 import modalState from "@/lib/store/modalState";
 
 export default function TaskCard({ task, index }) {
-  // Function to open modal to mark task complete
   const markComplete = () => {
     modalState.setState({
       modalInfo: {
@@ -14,34 +13,59 @@ export default function TaskCard({ task, index }) {
     });
   };
 
-  // Calculate time remaining
-  const dueDate = new Date(task.dueDate);
+  // Parse dueDate as local time
+  const parseLocalDate = (isoString) => {
+    if (!isoString) return null;
+
+    // Remove "Z" or milliseconds if present
+    const cleaned = isoString.replace("Z", "").split(".")[0];
+
+    const [datePart, timePart] = cleaned.split("T");
+    const [year, month, day] = datePart.split("-").map(Number);
+    const [hour, minute, second] = timePart.split(":").map(Number);
+
+    return new Date(year, month - 1, day, hour, minute, second);
+  };
+
+  const dueDate = task?.dueDate ? parseLocalDate(task.dueDate) : null;
   const now = new Date();
+
+  // Reference date: completedAt if task is completed
+  const referenceDate =
+    task.isCompleted && task.completedAt
+      ? parseLocalDate(task.completedAt)
+      : now;
+
+  const diffMs = dueDate ? dueDate.getTime() - referenceDate.getTime() : 0;
+  const isPastDue = !task.isCompleted && diffMs < 0;
+
+  // Calculate days, hours, minutes
   let timeRemaining = "";
+  const absDiffMs = Math.abs(diffMs);
+  const diffSeconds = Math.floor(absDiffMs / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
 
-  const diffMs = dueDate.getTime() - now.getTime(); // difference in milliseconds
+  const hours = diffHours - diffDays * 24;
+  const minutes = diffMinutes - diffDays * 24 * 60 - hours * 60;
 
-  if (diffMs > 0) {
-    const diffSeconds = Math.floor(diffMs / 1000);
-    const diffMinutes = Math.floor(diffSeconds / 60);
-    const diffHours = Math.floor(diffMinutes / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    const hours = diffHours - diffDays * 24;
-    const minutes = diffMinutes - diffDays * 24 * 60 - hours * 60;
-
-    if (diffDays > 0) {
-      timeRemaining = `${diffDays}d ${hours}h remaining`;
-    } else if (diffHours > 0) {
-      timeRemaining = `${hours}h ${minutes}m remaining`;
-    } else {
-      timeRemaining = `${minutes}m remaining`;
-    }
+  if (diffDays > 0) {
+    timeRemaining = `${diffDays}d ${hours}h`;
+  } else if (diffHours > 0) {
+    timeRemaining = `${hours}h ${minutes}m`;
   } else {
-    timeRemaining = "Past due";
+    timeRemaining = `${minutes}m`;
   }
 
-  const isPastDue = dueDate.getTime() < now.getTime();
+  // Append label
+  if (task.isCompleted) {
+    timeRemaining += diffMs >= 0 ? " early" : " late";
+  } else if (isPastDue) {
+    timeRemaining = "Past due";
+  } else {
+    timeRemaining += " remaining";
+  }
 
   return (
     <div
@@ -69,7 +93,7 @@ export default function TaskCard({ task, index }) {
         <p className="text-[#999999] text-[14px] mt-[5px]">{timeRemaining}</p>
 
         {/* Mark complete button */}
-        {!isPastDue && (
+        {!task.isCompleted && !isPastDue && (
           <span
             className="absolute group-hover:block hidden top-[15px] right-[15px] cursor-pointer"
             onClick={markComplete}

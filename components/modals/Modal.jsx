@@ -2,6 +2,7 @@ import modalState from "@/lib/store/modalState";
 import TaskForm from "./types/TaskForm";
 import { XIcon } from "lucide-react";
 import TaskMarkComplete from "./types/TaskMarkComplete";
+import TaskCalendarFilter from "./types/TaskCalendarFilter";
 export default function Modal() {
   const modalInfo = modalState((state) => state.modalInfo);
   const isOpen = modalInfo?.isOpen;
@@ -12,6 +13,9 @@ export default function Modal() {
       break;
     case "TASK_MARK_COMPLETE":
       form = <TaskMarkComplete />;
+      break;
+    case "TASK_CALENDAR_FILTER":
+      form = <TaskCalendarFilter />;
       break;
     default:
       break;

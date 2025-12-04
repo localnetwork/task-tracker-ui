@@ -11,7 +11,6 @@ export default function TextEditor({
   error,
   payload,
 }) {
-  console.log("error", error);
   return (
     <div
       className={`${

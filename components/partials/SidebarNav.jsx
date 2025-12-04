@@ -56,7 +56,7 @@ export default function SidebarNav() {
   ];
   return (
     <div className="sidebar border-r border-[#303030] pr-[70px]">
-      <header className="text-white pl-[130px] max-w-[350px] w-full py-5 ">
+      <header className="text-white pl-[130px] max-w-[350px] w-full py-5 sticky top-0 ">
         <div className="mt-2 px-[20px]">
           <Link href="/" className="inline-block">
             <Image
